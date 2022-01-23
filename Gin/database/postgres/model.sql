@@ -2,7 +2,7 @@ CREATE TABLE customers(
     Id serial PRIMARY KEY,
     Name VARCHAR(30),
     Password VARCHAR(20),
-    Money INT NOT NULL,
+    Money INT ,
     Products JSONB
 );
 

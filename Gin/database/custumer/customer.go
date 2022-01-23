@@ -13,13 +13,6 @@ func Create(costumer models.Costumer) error {
 		panic(err)
 	}
 	defer tx.Commit()
-	_, err = tx.Exec(`INSERT INTO
-	 customers(name,password,money) 
-	 VALUES($1,$2,$3)`, costumer.Name, costumer.Password, costumer.Money)
-	if err != nil {
-		tx.Rollback()
-		panic(err)
-	}
 
 	return err
 }
@@ -28,16 +21,69 @@ func Login(costumer models.Costumer) (models.Costumer2, error) {
 	var new_costumer models.Costumer2
 
 	db := database.Conn()
-	defer db.Close()
-
-	res := db.QueryRow(`SELECT name,money FROM customers WHERE name=$1 AND password=$2`, costumer.Name, costumer.Password)
-	err := res.Scan(
+	tx, err := db.Begin()
+	defer tx.Commit()
+	if err != nil {
+		panic(err)
+	}
+	res := tx.QueryRow(`SELECT name,money FROM customers WHERE name=$1 AND password=$2`, costumer.Name, costumer.Password)
+	err = res.Scan(
 		&new_costumer.Name,
 		&new_costumer.Money,
 	)
 	if err != nil {
 		panic(err)
 	}
+
+	var prd string
+	var (
+		str   string
+		price int64
+	)
+	for _, j := range costumer.Products {
+
+		res, err := db.Query(`SELECT name,price FROM products WHERE id=$1`, j)
+		if err != nil {
+			panic(err)
+		}
+		err = res.Scan(
+			&str,
+			&price,
+		)
+		if err != nil {
+			panic(err)
+		}
+		prd += str
+
+	}
+
+	_, err = tx.Exec(`INSERT INTO
+	 customers(name,password,money,products) 
+	 VALUES($1,$2,$3,$4)`, costumer.Name, costumer.Password, costumer.Money, prd)
+	if err != nil {
+		tx.Rollback()
+		panic(err)
+	}
+
+	return new_costumer, nil
+}
+
+func Query_id(costumer models.Costumer) (models.Costumer2, error) {
+	var new_costumer models.Costumer2
+
+	db := database.Conn()
+	defer db.Close()
+
+	res := db.QueryRow(`SELECT id,name,money FROM customers WHERE id=$1`, costumer.Id)
+	err := res.Scan(
+		&new_costumer.Id,
+		&new_costumer.Name,
+		&new_costumer.Money,
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	new_costumer.Money = costumer.Money
 	rows, err := db.Query(`SELECT id,name,price FROM products`)
 	if err != nil {
@@ -62,48 +108,6 @@ func Login(costumer models.Costumer) (models.Costumer2, error) {
 				break
 			}
 		}
-	}
-	return new_costumer, nil
-}
-
-func Query_id(costumer models.Costumer) (models.Costumer2, error) {
-	var new_costumer models.Costumer2
-
-	db := database.Conn()
-	defer db.Close()
-
-	res := db.QueryRow(`SELECT id,name,money FROM customers WHERE id=$1`, costumer.Id)
-	err := res.Scan(
-		&new_costumer.Id,
-		&new_costumer.Name,
-		&new_costumer.Money,
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	var prd []string
-
-	for _, j := range costumer.Products {
-		var (
-			str   string
-			price int64
-		)
-		res := db.QueryRow(`SELECT name,price FROM products WHERE id=$1`, j)
-		err = res.Scan(
-			&str,
-			&price,
-		)
-		if err != nil {
-			panic(err)
-		}
-		prd = append(prd, str)
-		new_costumer.Money -= price
-	}
-
-	_, err = db.Exec(`INSERT INTO customers(products) VALUES($1)`, prd)
-	if err != nil {
-		panic(err)
 	}
 
 	return new_costumer, nil
