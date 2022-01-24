@@ -41,5 +41,3 @@ func Query(c *gin.Context) {
 	}
 	c.JSON(201,new)
 }
-
-

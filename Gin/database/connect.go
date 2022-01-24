@@ -12,4 +12,3 @@ func Conn() *sql.DB{
 	}
 	return db
 }
-
