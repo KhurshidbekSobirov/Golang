@@ -1,7 +1,7 @@
 package grpcClient
 
 import (
-    "github.com/KhurshidbekSobirov/Golang/template-service/config"
+    "github.com/KhurshidbekSobirov/Golang/microservice/config"
 )
 
 //GrpcClientI ...

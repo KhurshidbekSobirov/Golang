@@ -2,8 +2,8 @@ package storage
 
 import (
     "github.com/jmoiron/sqlx"
-    "github.com/KhurshidbekSobirov/Golang/template-service/storage/postgres"
-    "github.com/KhurshidbekSobirov/Golang/template-service/storage/repo"
+    "github.com/KhurshidbekSobirov/Golang/microservice/storage/postgres"
+    "github.com/KhurshidbekSobirov/Golang/microservice/storage/repo"
 )
 
 //IStorage ...

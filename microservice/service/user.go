@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	pb "github.com/KhurshidbekSobirov/Golang/template-service/genproto"
-	l"github.com/KhurshidbekSobirov/Golang/template-service/pkg/logger"
-	"github.com/KhurshidbekSobirov/Golang/template-service/storage"
+	pb "github.com/KhurshidbekSobirov/Golang/microservice/genproto"
+	l"github.com/KhurshidbekSobirov/Golang/microservice/pkg/logger"
+	"github.com/KhurshidbekSobirov/Golang/microservice/storage"
 )
 
 //UserService ...

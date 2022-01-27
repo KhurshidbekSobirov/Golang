@@ -1,11 +1,11 @@
 package main
 
 import (
-    "github.com/KhurshidbekSobirov/Golang/template-service/config"
-    pb "github.com/KhurshidbekSobirov/Golang/template-service/genproto"
-    "github.com/KhurshidbekSobirov/Golang/template-service/pkg/db"
-    "github.com/KhurshidbekSobirov/Golang/template-service/pkg/logger"
-    "github.com/KhurshidbekSobirov/Golang/template-service/service"
+    "github.com/KhurshidbekSobirov/Golang/microservice/config"
+    pb "github.com/KhurshidbekSobirov/Golang/microservice/genproto"
+    "github.com/KhurshidbekSobirov/Golang/microservice/pkg/db"
+    "github.com/KhurshidbekSobirov/Golang/microservice/pkg/logger"
+    "github.com/KhurshidbekSobirov/Golang/microservice/service"
     "google.golang.org/grpc"
     "google.golang.org/grpc/reflection"
     "net"
