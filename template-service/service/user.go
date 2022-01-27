@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	pb "github.com/rustagram/template-service/genproto"
-	l "github.com/rustagram/template-service/pkg/logger"
-	"github.com/rustagram/template-service/storage"
+	pb "github.com/KhurshidbekSobirov/Golang/template-service/genproto"
+	l"github.com/KhurshidbekSobirov/Golang/template-service/pkg/logger"
+	"github.com/KhurshidbekSobirov/Golang/template-service/storage"
 )
 
 //UserService ...
@@ -23,6 +24,15 @@ func NewUserService(db *sqlx.DB, log l.Logger) *UserService {
 	}
 }
 
+
 func (s *UserService) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
-	return nil, nil
+		user, err := s.storage.User().Create(req)
+		if err != nil {
+			fmt.Println(err)
+		  s.logger.Error("Error while creating a new  user")
+		  return nil, err
+		  
+		}
+		return user, nil
 }
+

@@ -1,7 +1,7 @@
 package repo
 
 import (
-    pb "github.com/rustagram/template-service/genproto"
+    pb "github.com/KhurshidbekSobirov/Golang/template-service/genproto"
 )
 
 //UserStorageI ...

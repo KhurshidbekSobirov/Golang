@@ -1,12 +1,13 @@
 package main
 
 import (
-    "github.com/rustagram/template-service/config"
-    pb "github.com/rustagram/template-service/genproto"
-    "github.com/rustagram/template-service/pkg/db"
-    "github.com/rustagram/template-service/pkg/logger"
-    "github.com/rustagram/template-service/service"
+    "github.com/KhurshidbekSobirov/Golang/template-service/config"
+    pb "github.com/KhurshidbekSobirov/Golang/template-service/genproto"
+    "github.com/KhurshidbekSobirov/Golang/template-service/pkg/db"
+    "github.com/KhurshidbekSobirov/Golang/template-service/pkg/logger"
+    "github.com/KhurshidbekSobirov/Golang/template-service/service"
     "google.golang.org/grpc"
+    "google.golang.org/grpc/reflection"
     "net"
 )
 
@@ -34,6 +35,7 @@ func main() {
     }
 
     s := grpc.NewServer()
+    reflection.Register(s)
     pb.RegisterUserServiceServer(s, userService)
     log.Info("main: server running",
         logger.String("port", cfg.RPCPort))
