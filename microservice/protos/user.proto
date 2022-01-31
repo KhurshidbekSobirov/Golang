@@ -4,17 +4,28 @@ package user;
 
 service UserService {
     rpc Create(User) returns (User);
-    //rpc ListUsers(ListUserRequest) returns (ListUserResponse);
-    //rpc GetUser(User) returns (User);
-    //rpc DeleteUser(User) returns (Xabar);
+    rpc ListUsers(ListUserRequest) returns (ListUserResponse);
+    rpc GetUser(User) returns (User);
+    rpc DeleteUser(User) returns (Xabar);
+    rpc UpdateUser(User) returns (Xabar);
+    rpc Search (SearchUser) returns (User);
 }
 
-message User{
-    int64 id = 1;
+message User {
+    int64  id = 1;
     string first_name = 2;
     string last_name = 3;
-    string username = 4;
-    string email = 5;
+    string email = 4;
+    string location = 5;
+    repeated Phone phone = 6;
+}
+message Phone {
+    string phone_type = 1;
+    string num =2;
+}
+message SearchUser {
+    string search = 1;
+    string text = 2;
 }
 message ListUserRequest {
     int64 limit = 1;
@@ -25,4 +36,5 @@ message Xabar {
 }
 message ListUserResponse {
     repeated User user = 1;
+    int64 all = 2;
 }

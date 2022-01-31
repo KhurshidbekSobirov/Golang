@@ -1,4 +1,4 @@
-module github.com/KhurshidbekSobirov/Golang/microservice
+module github.com/KhurshidbekSobirov/Golang
 
 go 1.17
 

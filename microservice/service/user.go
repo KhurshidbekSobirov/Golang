@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"fmt"
+
+	pb "github.com/KhurshidbekSobirov/Golang/genproto"
+	l "github.com/KhurshidbekSobirov/Golang/pkg/logger"
+	"github.com/KhurshidbekSobirov/Golang/storage"
 
 	"github.com/jmoiron/sqlx"
-	pb "github.com/KhurshidbekSobirov/Golang/microservice/genproto"
-	l"github.com/KhurshidbekSobirov/Golang/microservice/pkg/logger"
-	"github.com/KhurshidbekSobirov/Golang/microservice/storage"
 )
 
 //UserService ...
@@ -24,15 +24,48 @@ func NewUserService(db *sqlx.DB, log l.Logger) *UserService {
 	}
 }
 
-
 func (s *UserService) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
-		user, err := s.storage.User().Create(req)
-		if err != nil {
-			fmt.Println(err)
-		  s.logger.Error("Error while creating a new  user")
-		  return nil, err
-		  
-		}
-		return user, nil
+	res, err := s.storage.User().Create(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+func (s *UserService) ListUsers(ctx context.Context, req *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	res, err := s.storage.User().ListUsers(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
+func (s *UserService) GetUser(ctx context.Context, req *pb.User) (*pb.User, error) {
+	res, err := s.storage.User().GetUser(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+func (s *UserService) DeleteUser(ctx context.Context, req *pb.User) (*pb.Xabar, error) {
+	res, err := s.storage.User().DeleteUser(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (s *UserService) UpdateUser(ctx context.Context, req *pb.User) (*pb.Xabar, error) {
+	res, err := s.storage.User().UpdateUser(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (s *UserService) Search(ctx context.Context, req *pb.SearchUser) (*pb.User, error) {
+	res, err := s.storage.User().Search(req)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
