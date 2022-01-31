@@ -2,7 +2,6 @@ package main
 
 import (
 	"net"
-
 	"github.com/KhurshidbekSobirov/Golang/config"
 	pb "github.com/KhurshidbekSobirov/Golang/genproto"
 	"github.com/KhurshidbekSobirov/Golang/pkg/db"

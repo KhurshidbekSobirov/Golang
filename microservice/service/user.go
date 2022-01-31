@@ -24,6 +24,7 @@ func NewUserService(db *sqlx.DB, log l.Logger) *UserService {
 	}
 }
 
+
 func (s *UserService) Create(ctx context.Context, req *pb.User) (*pb.User, error) {
 	res, err := s.storage.User().Create(req)
 	if err != nil {
