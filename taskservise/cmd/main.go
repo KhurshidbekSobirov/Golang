@@ -37,7 +37,7 @@ func main() {
 	s := grpc.NewServer()
 	reflection.Register(s)
 
-	pb.RegisterUserServiceServer(s, taskService)
+	pb.RegisterTaskServiceServer(s,taskService)
 	log.Info("main: server running",
 		logger.String("port:", cfg.RPCPort))
 

@@ -19,24 +19,20 @@ func NewTaskRepo(db *sqlx.DB) *taskRepo {
 func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
 	task := pb.Task{}
 	query := `INSERT INTO tasks(
-		id,
 		assignee,
 		title,
 		deadline,
 		status,
-		created_at,
-		updated_at,
-		deleted_at) 
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-        RETURNING id,assignee,title,deadline,status,created_at,updated_at,deleted_at`
-	err := r.db.QueryRow(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt, task.UpdatedAt, task.DeletedAt).Scan(
+		created_at) 
+        VALUES($1,$2,$3,$4,$5,$6,)
+        RETURNING id,assignee,title,deadline,status,created_at`
+	err := r.db.QueryRow(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt).Scan(
 		&task.Id,
 		&task.Assignee,
 		&task.Title,
 		&task.Status,
 		&task.CreatedAt,
-		&task.UpdatedAt,
-		&task.DeletedAt,
+
 	)
 	if err != nil {
 		return nil, err

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package task;
 
-service UserService {
+service TaskService {
     rpc Create(Task) returns (Task);
     rpc GetTask(Task) returns (Task);
     rpc Update(Task) returns (Task);
