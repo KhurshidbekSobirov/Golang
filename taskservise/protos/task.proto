@@ -10,7 +10,7 @@ service UserService {
     rpc ListOverdue(Mess) returns(ListTask);
 }
 
-message Task {
+message Task{
     int64 id = 1;
     string assignee = 2;
     string title = 3;

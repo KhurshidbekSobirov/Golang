@@ -18,7 +18,7 @@ func NewTaskRepo(db *sqlx.DB) *taskRepo {
 
 func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
 	task := pb.Task{}
-	query := `INSERT INTO users(
+	query := `INSERT INTO tasks(
 		id,
 		assignee,
 		title,
@@ -47,7 +47,7 @@ func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
 func (r *taskRepo) GetTask(l *pb.Task) (*pb.Task, error) {
 
 	task := pb.Task{}
-	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM users WHERE id=$1`
+	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE id=$1`
 	err := r.db.QueryRow(query, task.Id).Scan(
 		&task.Id,
 		&task.Assignee,
@@ -77,7 +77,7 @@ func (r *taskRepo) Update(l *pb.Task) (*pb.Task,error){
 }
 
 func (r *taskRepo) Delete(task *pb.Task) (*pb.Mess, error) {
-	query := `DELETE FROM users WHERE id=$1`
+	query := `DELETE FROM tasks WHERE id=$1`
 	_, err := r.db.Exec(query, task.Id)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (r *taskRepo) Delete(task *pb.Task) (*pb.Mess, error) {
 }
 
 func (r *taskRepo) ListOverdue(req *pb.Mess) (*pb.ListTask, error) {
-	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at WHERE deadline>$1`
+	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE deadline>$1`
 	now_time := time.Now().Format(time.RFC3339)
 
 	rows, err := r.db.Query(query,now_time)
