@@ -1,211 +1,117 @@
 package postgres
 
 import (
-	"encoding/json"
-	pb "Golang/genproto"
+	pb "app/genproto"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type TaskRepo struct {
+type taskRepo struct {
 	db *sqlx.DB
 }
 
 //NewUserRepo ...
-func NewUserRepo(db *sqlx.DB) *TaskRepo {
-	return &TaskRepo{db: db}
+func NewTaskRepo(db *sqlx.DB) *taskRepo {
+	return &taskRepo{db: db}
 }
 
-func (r *TaskRepo) Create(user *pb.User) (*pb.User, error) {
+func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
+	task := pb.Task{}
 	query := `INSERT INTO users(
 		id,
 		assignee,
 		title,
-		summary,
 		deadline,
 		status,
 		created_at,
 		updated_at,
 		deleted_at) 
         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-        RETURNING id,first_name,last_name,email,location,phone`
-	err := r.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Location, res).Scan(
-		&
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Location,
-		&res,
+        RETURNING id,assignee,title,deadline,status,created_at,updated_at,deleted_at`
+	err := r.db.QueryRow(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt, task.UpdatedAt, task.DeletedAt).Scan(
+		&task.Id,
+		&task.Assignee,
+		&task.Title,
+		&task.Status,
+		&task.CreatedAt,
+		&task.UpdatedAt,
+		&task.DeletedAt,
 	)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(res, &user.Phone)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (r *TaskRepo) ListUsers(list *pb.ListUserRequest) (*pb.ListUserResponse, error) {
-	var byt []byte
-	offset := (list.Page - 1) * list.Limit
-	query := `SELECT
-        id,
-        first_name,
-        last_name,
-        email,
-        location,
-        phone
-        FROM users OFFSET $1 LIMIT $2`
-	rows, err := r.db.Query(query, offset, list.Limit)
-	if err != nil {
-		return nil, err
-	}
-	allUser := pb.ListUserResponse{}
-	err = r.db.QueryRow(`SELECT COUNT(*) FROM users`).Scan(&allUser.All)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var user = pb.User{}
-		err := rows.Scan(
-			&user.Id,
-			&user.FirstName,
-			&user.LastName,
-			&user.Email,
-			&user.Location,
-			&byt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(byt, &user.Phone)
-		if err != nil {
-			return nil, err
-		}
-		allUser.User = append(allUser.User, &user)
-	}
+func (r *taskRepo) GetTask(l *pb.Task) (*pb.Task, error) {
 
-	return &allUser, nil
-}
-
-func (r *TaskRepo) GetUser(user *pb.User) (*pb.User, error) {
-	var byt []byte
-	query := `SELECT first_name,last_name,email,location,phone FROM users WHERE id=$1`
-	err := r.db.QueryRow(query, user.Id).Scan(
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Location,
-		&byt,
+	task := pb.Task{}
+	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM users WHERE id=$1`
+	err := r.db.QueryRow(query, task.Id).Scan(
+		&task.Id,
+		&task.Assignee,
+		&task.Title,
+		&task.Status,
+		&task.CreatedAt,
+		&task.UpdatedAt,
+		&task.DeletedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(byt, &user.Phone)
+
+	return &task, nil
+}
+
+func (r *taskRepo) Update(l *pb.Task) (*pb.Task,error){
+	task := pb.Task{}
+
+	query := `UPDATE tasks SET  assignee = $1,title = $2,deadline = $3,status = $4,created_at = $5,updated_at = $6,deleted_at = $7`
+
+	_, err := r.db.Exec(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt, task.UpdatedAt, task.DeletedAt)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return &pb.Task{}, nil
 }
-func (r *TaskRepo) DeleteUser(user *pb.User) (*pb.Xabar, error) {
+
+func (r *taskRepo) Delete(task *pb.Task) (*pb.Mess, error) {
 	query := `DELETE FROM users WHERE id=$1`
-	_, err := r.db.Exec(query, user.Id)
+	_, err := r.db.Exec(query, task.Id)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Xabar{Message: "Ok!"}, nil
+	return &pb.Mess{Message: "Ok!"}, nil
 }
 
-func (r *TaskRepo) UpdateUser(user *pb.User) (*pb.Xabar, error) {
-	query := `UPDATE users SET first_name=$1, last_name=$2, email=$3, location=$4, phone=$5 WHERE id=$6`
-	byt, err := json.Marshal(user.Phone)
+func (r *taskRepo) ListOverdue(req *pb.Mess) (*pb.ListTask, error) {
+	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at WHERE deadline>$1`
+	now_time := time.Now().Format(time.RFC3339)
+
+	rows, err := r.db.Query(query,now_time)
 	if err != nil {
-		return nil, err
+		return nil,err
 	}
-	_, err = r.db.Exec(query, user.FirstName, user.LastName, user.Email, user.Location, byt, user.Id)
-	if err != nil {
-		return nil, err
+	task := pb.Task{}
+	tasks := pb.ListTask{}
+	for rows.Next(){
+		err := rows.Scan(
+			&task.Id,
+			&task.Assignee,
+			&task.Title,
+			&task.Status,
+			&task.CreatedAt,
+			&task.UpdatedAt,
+			&task.DeletedAt,
+		)
+		if err != nil{
+			return nil,err
+		}
+
+		tasks.Task = append(tasks.Task,&task)
 	}
-	return &pb.Xabar{Message: "Ok!"}, nil
+
+	return &tasks,err
 }
 
-func (r *TaskRepo) Search(user *pb.SearchUser) (*pb.User, error) {
-	userr := pb.User{}
-	user.Text += "%"
-	if user.Search == "first_name" {
-		var byt []byte
-		query := `SELECT id,first_name,last_name,email,location,phone FROM users WHERE first_name  LIKE $1`
-		err := r.db.QueryRow(query, user.Text).Scan(
-			&userr.Id,
-			&userr.FirstName,
-			&userr.LastName,
-			&userr.Email,
-			&userr.Location,
-			&byt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(byt, &userr.Phone)
-		if err != nil {
-			return nil, err
-		}
-	} else if user.Search == "last_name" {
-		var byt []byte
-		query := `SELECT id,first_name,last_name,email,location,phone FROM users WHERE last_name  LIKE $1`
-		err := r.db.QueryRow(query, user.Text).Scan(
-			&userr.Id,
-			&userr.FirstName,
-			&userr.LastName,
-			&userr.Email,
-			&userr.Location,
-			&byt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(byt, &userr.Phone)
-		if err != nil {
-			return nil, err
-		}
-	} else if user.Search == "email" {
-		var byt []byte
-		query := `SELECT id,first_name,last_name,email,location,phone FROM users WHERE email  LIKE $1`
-		err := r.db.QueryRow(query, user.Text).Scan(
-			&userr.Id,
-			&userr.FirstName,
-			&userr.LastName,
-			&userr.Email,
-			&userr.Location,
-			&byt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(byt, &userr.Phone)
-		if err != nil {
-			return nil, err
-		}
-	} else if user.Search == "location" {
-		var byt []byte
-		query := `SELECT id,first_name,last_name,email,location,phone FROM users WHERE location  LIKE $1`
-		err := r.db.QueryRow(query, user.Text).Scan(
-			&userr.Id,
-			&userr.FirstName,
-			&userr.LastName,
-			&userr.Email,
-			&userr.Location,
-			&byt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(byt, &userr.Phone)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return &userr, nil
-}

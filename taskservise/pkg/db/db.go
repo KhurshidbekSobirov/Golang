@@ -4,7 +4,7 @@ import (
     "fmt"
     "github.com/jmoiron/sqlx"
     _ "github.com/lib/pq" //postgres drivers
-    "Golang/config"
+    "app/config"
 )
 
 func ConnectToDB(cfg config.Config) (*sqlx.DB, error) {
