@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "user_service/user.proto";
+
+package user;
+
+service UserService {
+    rpc Create(UserRes) returns(UserReq);
+    rpc GetUser(ById) returns(UserReq);
+    rpc Update(UserReq) returns(Mess);
+    rpc Delete(ById) returns(Mess);
+}

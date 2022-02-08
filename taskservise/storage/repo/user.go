@@ -8,7 +8,7 @@ import (
 type TaskStorageI interface {
 	Create(*pb.Task) (*pb.Task, error)
 	GetTask(*pb.Task) (*pb.Task, error)
-	Update(*pb.Task) (*pb.Task, error)
-	Delete(*pb.Task) (*pb.Mess, error)
+	UpdateTask(*pb.Task) (*pb.Task, error)
+	DeleteTask(*pb.Task) (*pb.Mess, error)
 	ListOverdue(*pb.Mess) (*pb.ListTask, error)
 }

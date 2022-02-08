@@ -20,16 +20,15 @@ func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
 	task := pb.Task{}
 	query := `INSERT INTO tasks(
 		assignee,
-		title,
 		deadline,
 		status,
 		created_at) 
         VALUES($1,$2,$3,$4,$5,$6,)
-        RETURNING id,assignee,title,deadline,status,created_at`
-	err := r.db.QueryRow(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt).Scan(
+        RETURNING id,assignee,deadline,status,created_at`
+	err := r.db.QueryRow(query, task.Id, task.Assignee, task.Deadline, task.Status, task.CreatedAt).Scan(
 		&task.Id,
 		&task.Assignee,
-		&task.Title,
+		&task.Deadline,
 		&task.Status,
 		&task.CreatedAt,
 
@@ -43,11 +42,10 @@ func (r *taskRepo) Create(user *pb.Task) (*pb.Task, error) {
 func (r *taskRepo) GetTask(l *pb.Task) (*pb.Task, error) {
 
 	task := pb.Task{}
-	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE id=$1`
+	query := `SELECT id,assignee,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE id=$1`
 	err := r.db.QueryRow(query, task.Id).Scan(
 		&task.Id,
 		&task.Assignee,
-		&task.Title,
 		&task.Status,
 		&task.CreatedAt,
 		&task.UpdatedAt,
@@ -60,19 +58,19 @@ func (r *taskRepo) GetTask(l *pb.Task) (*pb.Task, error) {
 	return &task, nil
 }
 
-func (r *taskRepo) Update(l *pb.Task) (*pb.Task,error){
+func (r *taskRepo) UpdateTask(l *pb.Task) (*pb.Task,error){
 	task := pb.Task{}
 
-	query := `UPDATE tasks SET  assignee = $1,title = $2,deadline = $3,status = $4,created_at = $5,updated_at = $6,deleted_at = $7`
+	query := `UPDATE tasks SET  assignee = $1,deadline = $2,status = $3,created_at = $4,updated_at = $5,deleted_at = $6`
 
-	_, err := r.db.Exec(query, task.Id, task.Assignee, task.Title, task.Deadline, task.Status, task.CreatedAt, task.UpdatedAt, task.DeletedAt)
+	_, err := r.db.Exec(query, task.Id, task.Assignee, task.Deadline, task.Status, task.CreatedAt, task.UpdatedAt, task.DeletedAt)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Task{}, nil
 }
 
-func (r *taskRepo) Delete(task *pb.Task) (*pb.Mess, error) {
+func (r *taskRepo) DeleteTask(task *pb.Task) (*pb.Mess, error) {
 	query := `DELETE FROM tasks WHERE id=$1`
 	_, err := r.db.Exec(query, task.Id)
 	if err != nil {
@@ -82,7 +80,7 @@ func (r *taskRepo) Delete(task *pb.Task) (*pb.Mess, error) {
 }
 
 func (r *taskRepo) ListOverdue(req *pb.Mess) (*pb.ListTask, error) {
-	query := `SELECT id,assignee,title,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE deadline>$1`
+	query := `SELECT id,assignee,deadline,status,created_at,updated_at,deleted_at FROM tasks WHERE deadline>$1`
 	now_time := time.Now().Format(time.RFC3339)
 
 	rows, err := r.db.Query(query,now_time)
@@ -95,7 +93,6 @@ func (r *taskRepo) ListOverdue(req *pb.Mess) (*pb.ListTask, error) {
 		err := rows.Scan(
 			&task.Id,
 			&task.Assignee,
-			&task.Title,
 			&task.Status,
 			&task.CreatedAt,
 			&task.UpdatedAt,

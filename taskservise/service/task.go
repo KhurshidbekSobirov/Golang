@@ -42,7 +42,7 @@ func (s *taskService) GetTask(ctx context.Context, req *pb.Task) (*pb.Task, erro
 }
 
 func (s *taskService) Update(ctx context.Context, req *pb.Task) (*pb.Task, error) {
-	res, err := s.storage.Task().Update(req)
+	res, err := s.storage.Task().UpdateTask(req)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (s *taskService) Update(ctx context.Context, req *pb.Task) (*pb.Task, error
 }
 
 func (s *taskService) Delete(ctx context.Context, req *pb.Task) (*pb.Mess, error) {
-	res, err := s.storage.Task().Delete(req)
+	res, err := s.storage.Task().DeleteTask(req)
 	if err != nil {
 		return nil, err
 	}

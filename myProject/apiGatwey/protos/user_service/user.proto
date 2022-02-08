@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package user;
+
+
+message UserReq{
+    string id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string username = 4;
+    string profile_photo = 5;
+    string bio = 6;
+    string email = 7;
+    string gender = 8;
+    repeated Adress adress = 9;
+    repeated Phone phone_numbers = 10;
+    string created_at = 11;
+    string updated_at = 12;
+    string deleted_at = 13;
+    repeated TaskRes tasks = 14;
+}
+
+message UserRes{
+    string first_name = 1;
+    string last_name = 2;
+    string username = 3;
+    string profile_photo = 4;
+    string bio = 5;
+    string email = 6;
+    string gender = 7;
+    repeated Adress adress = 8;
+    repeated Phone phone_numbers = 9;
+    repeated TaskRes tasks = 10;
+}
+
+message TaskRes{
+    string name =1;
+    string deadline =2;
+    string summary =3;
+    string status =4;
+    string assignee_id =5;
+    string id = 6;
+}
+
+message Adress{
+    string name = 1;
+}
+
+message ById{
+    string userId =1;
+}
+
+message Phone {
+    string name = 1; 
+}
+
+message Mess {
+    string message = 1;
+}
+
+message ListUser {
+    repeated UserReq user = 1;
+    int64 all = 2;
+}

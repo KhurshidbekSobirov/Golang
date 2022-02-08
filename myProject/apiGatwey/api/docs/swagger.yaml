@@ -1,0 +1,357 @@
+basePath: /v1
+definitions:
+  task.Adress:
+    properties:
+      name:
+        type: string
+    type: object
+  task.ById:
+    properties:
+      TaskId:
+        type: string
+    type: object
+  task.Mess:
+    properties:
+      message:
+        type: string
+    type: object
+  task.Phone:
+    properties:
+      name:
+        type: string
+    type: object
+  task.TaskReq:
+    properties:
+      assigne_id:
+        type: string
+      created_at:
+        type: string
+      deadline:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      summary:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  task.TaskRes:
+    properties:
+      assignee_id:
+        type: string
+      deadline:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      summary:
+        type: string
+      user:
+        $ref: '#/definitions/task.User'
+    type: object
+  task.User:
+    properties:
+      adress:
+        items:
+          $ref: '#/definitions/task.Adress'
+        type: array
+      bio:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      phone_numbers:
+        items:
+          $ref: '#/definitions/task.Phone'
+        type: array
+      profile_photo:
+        type: string
+      username:
+        type: string
+    type: object
+  user.Adress:
+    properties:
+      name:
+        type: string
+    type: object
+  user.ById:
+    properties:
+      userId:
+        type: string
+    type: object
+  user.Mess:
+    properties:
+      message:
+        type: string
+    type: object
+  user.Phone:
+    properties:
+      name:
+        type: string
+    type: object
+  user.TaskRes:
+    properties:
+      assignee_id:
+        type: string
+      deadline:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+      summary:
+        type: string
+    type: object
+  user.UserReq:
+    properties:
+      adress:
+        items:
+          $ref: '#/definitions/user.Adress'
+        type: array
+      bio:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone_numbers:
+        items:
+          $ref: '#/definitions/user.Phone'
+        type: array
+      profile_photo:
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/user.TaskRes'
+        type: array
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  user.UserRes:
+    properties:
+      adress:
+        items:
+          $ref: '#/definitions/user.Adress'
+        type: array
+      bio:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      gender:
+        type: string
+      last_name:
+        type: string
+      phone_numbers:
+        items:
+          $ref: '#/definitions/user.Phone'
+        type: array
+      profile_photo:
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/user.TaskRes'
+        type: array
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /task/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete task
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.ById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.Mess'
+      summary: Delete task
+      tags:
+      - Task
+    get:
+      consumes:
+      - application/json
+      description: Get task
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.ById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskReq'
+      summary: Get task
+      tags:
+      - Task
+    put:
+      consumes:
+      - application/json
+      description: Update task
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.TaskReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.Mess'
+      summary: Update task
+      tags:
+      - Task
+  /tasks:
+    post:
+      consumes:
+      - application/json
+      description: This API for creating a new task
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/task.TaskRes'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/task.TaskReq'
+      summary: Create new task
+      tags:
+      - Task
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.ById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Mess'
+      summary: DeleteUser
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Get User
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserReq'
+      summary: GetUser
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update User
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.Mess'
+      summary: Update User
+      tags:
+      - User
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: This API for creating a new user
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserRes'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.UserReq'
+      summary: Create new user
+      tags:
+      - User
+swagger: "2.0"
