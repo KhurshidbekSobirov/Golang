@@ -15,6 +15,7 @@ message TaskReq{
     string created_at = 7;
     string updated_at = 8;
     string deleted_at = 9;
+    User user =10;
 }
 
 
@@ -46,6 +47,7 @@ message ByUserId{
 message ById{
     string TaskId = 1;
 }
+
 
 message Adress{
     string name = 1;

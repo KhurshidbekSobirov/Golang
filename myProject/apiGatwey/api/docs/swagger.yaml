@@ -1,14 +1,46 @@
 basePath: /v1
 definitions:
+  models.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  models.RegisterResponseModel:
+    properties:
+      message:
+        type: string
+    type: object
+  models.StandardErrorModel:
+    properties:
+      error:
+        $ref: '#/definitions/models.Error'
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   task.Adress:
     properties:
       name:
         type: string
     type: object
-  task.ById:
+  task.ListTasks:
     properties:
-      TaskId:
-        type: string
+      count:
+        type: integer
+      tasks:
+        items:
+          $ref: '#/definitions/task.TaskReq'
+        type: array
     type: object
   task.Mess:
     properties:
@@ -91,6 +123,13 @@ definitions:
       userId:
         type: string
     type: object
+  user.GetByemail:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   user.Mess:
     properties:
       message:
@@ -107,6 +146,8 @@ definitions:
         type: string
       deadline:
         type: string
+      id:
+        type: string
       name:
         type: string
       status:
@@ -116,6 +157,8 @@ definitions:
     type: object
   user.UserReq:
     properties:
+      acsess_token:
+        type: string
       adress:
         items:
           $ref: '#/definitions/user.Adress'
@@ -136,11 +179,15 @@ definitions:
         type: string
       last_name:
         type: string
+      password:
+        type: string
       phone_numbers:
         items:
           $ref: '#/definitions/user.Phone'
         type: array
       profile_photo:
+        type: string
+      refresh_taken:
         type: string
       tasks:
         items:
@@ -153,6 +200,8 @@ definitions:
     type: object
   user.UserRes:
     properties:
+      acsess_token:
+        type: string
       adress:
         items:
           $ref: '#/definitions/user.Adress'
@@ -165,13 +214,19 @@ definitions:
         type: string
       gender:
         type: string
+      id:
+        type: string
       last_name:
+        type: string
+      password:
         type: string
       phone_numbers:
         items:
           $ref: '#/definitions/user.Phone'
         type: array
       profile_photo:
+        type: string
+      refresh_taken:
         type: string
       tasks:
         items:
@@ -182,19 +237,88 @@ definitions:
     type: object
 info:
   contact: {}
+  description: GetMyProfile
 paths:
+  /login:
+    put:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/user.GetByemail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserReq'
+      summary: Login
+      tags:
+      - register
+  /profile:
+    get:
+      description: GetMyProfile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserReq'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+      security:
+      - BearerAuth: []
+      summary: GetMyProfile
+      tags:
+      - User
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register - API for registering users
+      parameters:
+      - description: register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RegisterResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+      summary: Register
+      tags:
+      - register
   /task/{id}:
     delete:
       consumes:
       - application/json
       description: Delete task
-      parameters:
-      - description: body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/task.ById'
       produces:
       - application/json
       responses:
@@ -210,12 +334,11 @@ paths:
       - application/json
       description: Get task
       parameters:
-      - description: body
-        in: body
-        name: body
+      - description: ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/task.ById'
+        type: string
       produces:
       - application/json
       responses:
@@ -248,6 +371,25 @@ paths:
       tags:
       - Task
   /tasks:
+    get:
+      consumes:
+      - application/json
+      description: ListOverdue
+      parameters:
+      - description: Mess
+        in: path
+        name: mess
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.ListTasks'
+      summary: ListOverdue
+      tags:
+      - Task
     post:
       consumes:
       - application/json
@@ -354,4 +496,38 @@ paths:
       summary: Create new user
       tags:
       - User
+  /verify/{code}:
+    post:
+      consumes:
+      - application/json
+      description: returns access token
+      parameters:
+      - description: code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.StandardErrorModel'
+      summary: Verify
+      tags:
+      - register
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

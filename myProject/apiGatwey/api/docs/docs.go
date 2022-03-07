@@ -23,6 +23,123 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/login": {
+            "put": {
+                "description": "Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "register"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Email",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.GetByemail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserReq"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "GetMyProfile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "GetMyProfile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserReq"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Register - API for registering users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "register"
+                ],
+                "summary": "Register",
+                "parameters": [
+                    {
+                        "description": "register",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.RegisterResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    }
+                }
+            }
+        },
         "/task/{id}": {
             "get": {
                 "description": "Get task",
@@ -38,13 +155,11 @@ var doc = `{
                 "summary": "Get task",
                 "parameters": [
                     {
-                        "description": "body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.ById"
-                        }
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -100,17 +215,6 @@ var doc = `{
                     "Task"
                 ],
                 "summary": "Delete task",
-                "parameters": [
-                    {
-                        "description": "body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.ById"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -122,6 +226,35 @@ var doc = `{
             }
         },
         "/tasks": {
+            "get": {
+                "description": "ListOverdue",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ListOverdue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mess",
+                        "name": "mess",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.ListTasks"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "This API for creating a new task",
                 "consumes": [
@@ -284,9 +417,97 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/verify/{code}": {
+            "post": {
+                "description": "returns access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "register"
+                ],
+                "summary": "Verify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.StandardErrorModel"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RegisterResponseModel": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.StandardErrorModel": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/models.Error"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "task.Adress": {
             "type": "object",
             "properties": {
@@ -295,11 +516,17 @@ var doc = `{
                 }
             }
         },
-        "task.ById": {
+        "task.ListTasks": {
             "type": "object",
             "properties": {
-                "TaskId": {
-                    "type": "string"
+                "count": {
+                    "type": "integer"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.TaskReq"
+                    }
                 }
             }
         },
@@ -428,6 +655,17 @@ var doc = `{
                 }
             }
         },
+        "user.GetByemail": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "user.Mess": {
             "type": "object",
             "properties": {
@@ -453,6 +691,9 @@ var doc = `{
                 "deadline": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -467,6 +708,9 @@ var doc = `{
         "user.UserReq": {
             "type": "object",
             "properties": {
+                "acsess_token": {
+                    "type": "string"
+                },
                 "adress": {
                     "type": "array",
                     "items": {
@@ -497,6 +741,9 @@ var doc = `{
                 "last_name": {
                     "type": "string"
                 },
+                "password": {
+                    "type": "string"
+                },
                 "phone_numbers": {
                     "type": "array",
                     "items": {
@@ -504,6 +751,9 @@ var doc = `{
                     }
                 },
                 "profile_photo": {
+                    "type": "string"
+                },
+                "refresh_taken": {
                     "type": "string"
                 },
                 "tasks": {
@@ -523,6 +773,9 @@ var doc = `{
         "user.UserRes": {
             "type": "object",
             "properties": {
+                "acsess_token": {
+                    "type": "string"
+                },
                 "adress": {
                     "type": "array",
                     "items": {
@@ -541,7 +794,13 @@ var doc = `{
                 "gender": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "last_name": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 },
                 "phone_numbers": {
@@ -551,6 +810,9 @@ var doc = `{
                     }
                 },
                 "profile_photo": {
+                    "type": "string"
+                },
+                "refresh_taken": {
                     "type": "string"
                 },
                 "tasks": {
@@ -563,6 +825,13 @@ var doc = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -583,7 +852,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "/v1",
 	Schemes:     []string{},
 	Title:       "",
-	Description: "",
+	Description: "GetMyProfile",
 }
 
 type s struct{}

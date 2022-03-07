@@ -7,7 +7,7 @@ import (
 	"myProject/taskService/pkg/logger"
 	"myProject/taskService/services"
 	"net"
-
+	"myProject/taskService/services/grpcClient"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -23,13 +23,17 @@ func main() {
 		logger.Int("port", cfg.PostgresPort),
 		logger.String("database", cfg.PostgresDatabase),
 	)
+	grpcClient, err := grpcClient.New(cfg)
+	if err != nil {
+		log.Error("grpc dial error", logger.Error(err))
+	}	
 
 	coonDB, err := db.ConnectToDB(cfg)
 	if err != nil {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
 
-	taskService := services.NewTaskService(coonDB, log)
+	taskService := services.NewTaskService(coonDB, log, grpcClient)
 
 	lis, err := net.Listen("tcp", cfg.RPCPort)
 	if err != nil {
@@ -49,3 +53,5 @@ func main() {
 	}
 
 }
+
+

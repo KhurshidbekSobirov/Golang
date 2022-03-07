@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"encoding/json"
+	"fmt"
 	pb "myProject/userService/genproto/user_service"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -24,7 +25,7 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 		return nil, err
 	}
 	numbers, err := json.Marshal(user.PhoneNumbers)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +40,13 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 		bio,
 		email,
 		gender,
+		password,
 		adress,
 		phone_numbers,
+		acsess_token,
+		refresh_taken,
 		created_at)
-		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+		VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 		RETURNING id,
 		first_name,
 		last_name,
@@ -51,14 +55,18 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 		bio,
 		email,
 		gender,
+		password,
 		adress,
 		phone_numbers,
+		acsess_token,
+		refresh_taken,
 		created_at`
 
-	uid := uuid.New().String()
 	time := time.Now().Format(time.RFC3339)
+	fmt.Println(user.Id, "\n\n\ne")
+
 	err = r.db.QueryRow(query,
-		uid,
+		user.Id,
 		user.FirstName,
 		user.LastName,
 		user.Username,
@@ -66,8 +74,11 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 		user.Bio,
 		user.Email,
 		user.Gender,
+		user.Password,
 		adress,
 		numbers,
+		user.AcsessToken,
+		user.RefreshTaken,
 		time,
 	).Scan(
 		&new_user.Id,
@@ -78,14 +89,16 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 		&new_user.Bio,
 		&new_user.Email,
 		&new_user.Gender,
+		&new_user.Password,
 		&a,
 		&b,
+		&new_user.AcsessToken,
+		&new_user.RefreshTaken,
 		&new_user.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
-	
 
 	err = json.Unmarshal(a, &new_user.Adress)
 	if err != nil {
@@ -95,10 +108,8 @@ func (r *userRepo) Create(user *pb.UserRes) (*pb.UserReq, error) {
 	if err != nil {
 		return nil, err
 	}
-	
 
 	return &new_user, nil
-
 }
 
 func (r *userRepo) GetUser(user *pb.ById) (*pb.UserReq, error) {
@@ -154,16 +165,16 @@ func (r *userRepo) GetUser(user *pb.ById) (*pb.UserReq, error) {
 	return &new_user, nil
 }
 
-func (r *userRepo) Update(user *pb.UserReq) (*pb.Mess, error) {
+func (r *userRepo) Update(user *pb.UserReq) error {
 	time := time.Now().Format(time.RFC3339)
 	adress, err := json.Marshal(user.Adress)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	numbers, err := json.Marshal(user.PhoneNumbers)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 	query := `UPDATE users SET
 		first_name = $1,
@@ -190,12 +201,13 @@ func (r *userRepo) Update(user *pb.UserReq) (*pb.Mess, error) {
 		adress,
 		numbers,
 		time,
+		user.Id,
 	)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &pb.Mess{Message: "OK"}, nil
+	return nil
 }
 
 func (r *userRepo) Delete(user *pb.ById) (*pb.Mess, error) {
@@ -209,7 +221,7 @@ func (r *userRepo) Delete(user *pb.ById) (*pb.Mess, error) {
 	return &pb.Mess{Message: "OK"}, err
 }
 
-func (r *userRepo) ListOverdue(req *pb.Mess) (*pb.ListUser, error) {
+func (r *userRepo) ListUsers(req *pb.Mess) (*pb.ListUser, error) {
 	var a = []byte{}
 	var b = []byte{}
 	query := ` SELECT 
@@ -265,4 +277,111 @@ func (r *userRepo) ListOverdue(req *pb.Mess) (*pb.ListUser, error) {
 		users.User = append(users.User, &new_user)
 	}
 	return &users, err
+}
+
+func (r *userRepo) CheckField(req *pb.Checkfild) (*pb.Mess, error) {
+	var existsCLient int
+
+	if req.Fildname == "username" {
+		row := r.db.QueryRow(`
+		SELECT count(1) FROM users WHERE username = $1 AND deleted_at IS NULL`, req.Fild)
+		_ = row.Scan(&existsCLient)
+		if existsCLient == 0 {
+			return &pb.Mess{Message: "OK"}, nil
+		}
+
+	}
+
+	if req.Fildname == "email" {
+		roww := r.db.QueryRow(`
+		SELECT count(1) FROM users WHERE email = $1 AND deleted_at IS NULL`, req.Fild)
+
+		var existsCLient2 int
+		_ = roww.Scan(&existsCLient2)
+		if existsCLient2 == 0 {
+			return &pb.Mess{Message: "OK"}, nil
+		}
+	}
+	return &pb.Mess{Message: "not update"}, nil
+}
+
+func (r *userRepo) GetByEmail(req *pb.GetByemail) (*pb.UserReq, error) {
+	new_user := pb.UserReq{}
+	var a = []byte{}
+	var b = []byte{}
+	query := `SELECT
+		id, 
+		first_name,
+		last_name,
+		username,
+		profile_photo,
+		bio,
+		email,
+		gender,
+		password,
+		adress,
+		phone_numbers,
+		acsess_token,
+		refresh_taken,
+		created_at
+		FROM users
+		WHERE email=$1 AND
+		deleted_at IS NULL`
+
+	err := r.db.QueryRow(query, req.Email).Scan(
+		&new_user.Id,
+		&new_user.FirstName,
+		&new_user.LastName,
+		&new_user.Username,
+		&new_user.ProfilePhoto,
+		&new_user.Bio,
+		&new_user.Email,
+		&new_user.Gender,
+		&new_user.Password,
+		&a,
+		&b,
+		&new_user.AcsessToken,
+		&new_user.RefreshTaken,
+		&new_user.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(a, &new_user.Adress)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(b, &new_user.PhoneNumbers)
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &new_user, nil
+}
+
+func (r *userRepo) SqlBld(req *pb.SqlbldRes) (*pb.Mess, error) {
+	sql := sqlbuilder.CreateTable("users").
+    SQL("PARTITION BY (year)").
+    SQL("AS").
+    SQL(
+        sqlbuilder.Select("columns[0] id", "columns[1] name", "columns[2] year").
+            From("`all-users.csv`").
+            Limit(100).
+            String(),
+    ).
+    String()
+
+	fmt.Println(sql)
+
+	_,err := r.db.Query(sql,nil)
+	if err != nil{
+		return nil, err
+	}
+
+	return &pb.Mess{Message: "ok"}, nil
 }

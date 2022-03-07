@@ -15,26 +15,35 @@ type Config struct {
 	PostgresPassword string
 	LogLevel         string
 	RPCPort          string
+	UserserviceHost  string
+	UserservicePort  int
+	EmailservicePort int
+	EmailserviceHost string
 }
 
 func Load() Config {
 	c := Config{}
 
-	c.Environment = cast.ToString(getOrRuturnDefault("ENVIRONMENT","develop"))
-	c.PostgresHost = cast.ToString(getOrRuturnDefault("POSTGRES_HOST","localhost"))
-	c.PostgresPort = cast.ToInt(getOrRuturnDefault("POSTGRES_PORT",5432))
-	c.PostgresDatabase = cast.ToString(getOrRuturnDefault("POSTGRES_DATABASE","tasks"))
-	c.PostgresUser = cast.ToString(getOrRuturnDefault("POSTGRES_USER","khurshid"))
-	c.PostgresPassword = cast.ToString(getOrRuturnDefault("POSTGRES_PASSWORD","X"))
+	c.Environment = cast.ToString(getOrReturnDefault("ENVIRONMENT", "develop"))
+	c.PostgresHost = cast.ToString(getOrReturnDefault("POSTGRES_HOST", "db"))
+	c.PostgresPort = cast.ToInt(getOrReturnDefault("POSTGRES_PORT", 5432))
+	c.PostgresDatabase = cast.ToString(getOrReturnDefault("POSTGRES_DATABASE", "postgres"))
+	c.PostgresUser = cast.ToString(getOrReturnDefault("POSTGRES_USER", "khurshid"))
+	c.PostgresPassword = cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD", "X"))
 
-	c.LogLevel =  cast.ToString(getOrRuturnDefault("LOG_LEVEL","debug"))
-	c.RPCPort = cast.ToString(getOrRuturnDefault("RPC_PORT",":9000"))
+	c.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
+	c.RPCPort = cast.ToString(getOrReturnDefault("RPC_PORT", ":9000"))
+
+	c.UserservicePort = cast.ToInt(getOrReturnDefault("USER_SERVICE_PORT", 9001))
+	c.UserserviceHost = cast.ToString(getOrReturnDefault("USER_SERVICE_HOST", "user_service"))
+	c.EmailservicePort = cast.ToInt(getOrReturnDefault("EMAIL_SERVICE_PORT", 9002))
+	c.EmailserviceHost = cast.ToString(getOrReturnDefault("EMAIL_SERVICE_HOST", "emails_service"))
+
 
 	return c
 }
 
-
-func getOrRuturnDefault(key string, defaultValue interface{}) interface{}{
+func getOrReturnDefault(key string, defaultValue interface{}) interface{} {
 	_, exists := os.LookupEnv(key)
 	if exists {
 		return os.Getenv(key)

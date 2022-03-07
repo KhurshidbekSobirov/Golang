@@ -9,4 +9,7 @@ service UserService {
     rpc GetUser(ById) returns(UserReq);
     rpc Update(UserReq) returns(Mess);
     rpc Delete(ById) returns(Mess);
+    rpc ListUsers(Mess) returns(ListUser);
+    rpc CheckField(Checkfild) returns(Mess);
+    rpc GetByEmail(GetByemail) returns(UserReq);
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	pb "myProject/apiGatwey/genproto/task_service"
 	l "myProject/apiGatwey/pkg/logger"
 	"net/http"
@@ -56,7 +57,7 @@ func (h *handlerV1) CreateTask(c *gin.Context) {
 // @Description  Get task
 // @Tags Task
 // @Accept json
-// @Param body body task.ById true "body"
+// @Param  id path string true "ID"
 // @Produce json
 // @Success 200 {object} task.TaskReq
 // @Router /task/{id} [get]
@@ -132,7 +133,6 @@ func (h *handlerV1) UpdateTask(c *gin.Context) {
 // @Schemes
 // @Description  Delete task
 // @Tags Task
-// @Param body body task.ById true "body"
 // @Accept json
 // @Produce json
 // @Success 200 {object} task.Mess
@@ -154,6 +154,35 @@ func (h *handlerV1) DeleteTask(c *gin.Context) {
 			"error": err.Error(),
 		})
 		h.log.Error("failed to delete task", l.Error(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// ListOverdue godoc
+// @Summary ListOverdue
+// @Description ListOverdue
+// @Param  mess path string false "Mess"
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Success 200 {object} task.ListTasks
+// @Router /tasks [get]
+func (h *handlerV1) ListOverdue(c *gin.Context) {
+	var jspbMarshal protojson.MarshalOptions
+	jspbMarshal.UseProtoNames = true
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(h.cfg.CtxTimeout))
+	defer cancel()
+
+	response, err := h.serviceManager.TaskService().ListOverdue(ctx,&pb.Mess{Message: ""})
+	fmt.Println(response)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		h.log.Error("failed to listoverdue", l.Error(err))
 		return
 	}
 

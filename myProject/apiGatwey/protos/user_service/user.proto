@@ -18,6 +18,9 @@ message UserReq{
     string updated_at = 12;
     string deleted_at = 13;
     repeated TaskRes tasks = 14;
+    string refresh_taken = 15;
+    string acsess_token =16;
+    string password = 17;
 }
 
 message UserRes{
@@ -31,6 +34,10 @@ message UserRes{
     repeated Adress adress = 8;
     repeated Phone phone_numbers = 9;
     repeated TaskRes tasks = 10;
+    string refresh_taken = 15;
+    string acsess_token =16;
+    string password = 17;
+    string id = 18;
 }
 
 message TaskRes{
@@ -62,3 +69,16 @@ message ListUser {
     repeated UserReq user = 1;
     int64 all = 2;
 }
+
+message Checkfild{
+    string fildname = 1;
+    string fild = 2;
+}
+
+
+message GetByemail{
+    string email = 1;
+    string password = 2;
+}
+
+

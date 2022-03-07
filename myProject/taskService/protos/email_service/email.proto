@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package email;
+
+message Email{
+    string Id=1;
+    string Subject=2;
+    string Body=3;
+    string Recipient =4;
+}
+
+message Empty{
+    
+}
+
+message Sms{
+    string from = 6;
+    string api_key = 2;
+    string api_secret = 3;
+    string to =4;
+    string text =5; 
+}

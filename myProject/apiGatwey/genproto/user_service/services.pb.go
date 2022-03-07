@@ -27,18 +27,22 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 func init() { proto.RegisterFile("user_service/services.proto", fileDescriptor_7d6f0b2b44e91180) }
 
 var fileDescriptor_7d6f0b2b44e91180 = []byte{
-	// 169 bytes of a gzipped FileDescriptorProto
+	// 236 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2e, 0x2d, 0x4e, 0x2d,
 	0x8a, 0x2f, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xd5, 0x87, 0xd2, 0xc5, 0x7a, 0x05, 0x45, 0xf9,
-	0x25, 0xf9, 0x42, 0x2c, 0x20, 0x49, 0x29, 0x71, 0x14, 0x25, 0x20, 0x0e, 0x44, 0xda, 0x68, 0x11,
-	0x23, 0x17, 0x77, 0x68, 0x71, 0x6a, 0x51, 0x30, 0x44, 0x4a, 0x48, 0x8d, 0x8b, 0xcd, 0xb9, 0x28,
+	0x25, 0xf9, 0x42, 0x2c, 0x20, 0x49, 0x29, 0x71, 0x14, 0x25, 0x20, 0x0e, 0x44, 0xda, 0x68, 0x29,
+	0x13, 0x17, 0x77, 0x68, 0x71, 0x6a, 0x51, 0x30, 0x44, 0x4a, 0x48, 0x8d, 0x8b, 0xcd, 0xb9, 0x28,
 	0x35, 0xb1, 0x24, 0x55, 0x88, 0x57, 0x0f, 0xac, 0x0c, 0x24, 0x19, 0x94, 0x5a, 0x2c, 0x85, 0xc2,
 	0x2d, 0x14, 0x52, 0xe1, 0x62, 0x77, 0x4f, 0x2d, 0x01, 0xf1, 0x84, 0xb8, 0x20, 0x32, 0x4e, 0x95,
 	0x9e, 0x29, 0xe8, 0xaa, 0x94, 0xb9, 0xd8, 0x42, 0x0b, 0x52, 0x30, 0x4c, 0x2b, 0x94, 0x82, 0xea,
 	0xf1, 0x4d, 0x2d, 0x2e, 0x16, 0x52, 0xe0, 0x62, 0x73, 0x49, 0xcd, 0x49, 0x2d, 0x49, 0x45, 0x31,
-	0x09, 0x49, 0x85, 0x93, 0xc0, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24,
-	0xc7, 0x38, 0xe3, 0xb1, 0x1c, 0x43, 0x12, 0x1b, 0xd8, 0xf5, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0x36, 0x17, 0xe7, 0x6c, 0xfb, 0x00, 0x00, 0x00,
+	0x09, 0x59, 0x85, 0x3a, 0x17, 0xa7, 0x4f, 0x66, 0x31, 0xd8, 0xb6, 0x62, 0x21, 0x24, 0x09, 0x29,
+	0x3e, 0x08, 0x1b, 0x26, 0x29, 0xa4, 0xc9, 0xc5, 0xe5, 0x9c, 0x91, 0x9a, 0x9c, 0xed, 0x96, 0x99,
+	0x9a, 0x93, 0x22, 0xc4, 0x0f, 0x91, 0x05, 0x8b, 0xa4, 0x65, 0xe6, 0xa0, 0x9a, 0xa9, 0xcb, 0xc5,
+	0xe5, 0x9e, 0x5a, 0xe2, 0x54, 0xe9, 0x9a, 0x9b, 0x98, 0x99, 0x23, 0x24, 0x00, 0x91, 0x01, 0x8b,
+	0xa4, 0x82, 0x44, 0xd0, 0x7c, 0xe2, 0x24, 0x70, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c,
+	0x0f, 0x1e, 0xc9, 0x31, 0xce, 0x78, 0x2c, 0xc7, 0x90, 0xc4, 0x06, 0x0e, 0x40, 0x63, 0x40, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x12, 0xb2, 0x51, 0x78, 0x7e, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -57,6 +61,9 @@ type UserServiceClient interface {
 	GetUser(ctx context.Context, in *ById, opts ...grpc.CallOption) (*UserReq, error)
 	Update(ctx context.Context, in *UserReq, opts ...grpc.CallOption) (*Mess, error)
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Mess, error)
+	ListUsers(ctx context.Context, in *Mess, opts ...grpc.CallOption) (*ListUser, error)
+	CheckField(ctx context.Context, in *Checkfild, opts ...grpc.CallOption) (*Mess, error)
+	GetByEmail(ctx context.Context, in *GetByemail, opts ...grpc.CallOption) (*UserReq, error)
 }
 
 type userServiceClient struct {
@@ -103,12 +110,42 @@ func (c *userServiceClient) Delete(ctx context.Context, in *ById, opts ...grpc.C
 	return out, nil
 }
 
+func (c *userServiceClient) ListUsers(ctx context.Context, in *Mess, opts ...grpc.CallOption) (*ListUser, error) {
+	out := new(ListUser)
+	err := c.cc.Invoke(ctx, "/user.UserService/ListUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CheckField(ctx context.Context, in *Checkfild, opts ...grpc.CallOption) (*Mess, error) {
+	out := new(Mess)
+	err := c.cc.Invoke(ctx, "/user.UserService/CheckField", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetByemail, opts ...grpc.CallOption) (*UserReq, error) {
+	out := new(UserReq)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 type UserServiceServer interface {
 	Create(context.Context, *UserRes) (*UserReq, error)
 	GetUser(context.Context, *ById) (*UserReq, error)
 	Update(context.Context, *UserReq) (*Mess, error)
 	Delete(context.Context, *ById) (*Mess, error)
+	ListUsers(context.Context, *Mess) (*ListUser, error)
+	CheckField(context.Context, *Checkfild) (*Mess, error)
+	GetByEmail(context.Context, *GetByemail) (*UserReq, error)
 }
 
 // UnimplementedUserServiceServer can be embedded to have forward compatible implementations.
@@ -126,6 +163,15 @@ func (*UnimplementedUserServiceServer) Update(ctx context.Context, req *UserReq)
 }
 func (*UnimplementedUserServiceServer) Delete(ctx context.Context, req *ById) (*Mess, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (*UnimplementedUserServiceServer) ListUsers(ctx context.Context, req *Mess) (*ListUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (*UnimplementedUserServiceServer) CheckField(ctx context.Context, req *Checkfild) (*Mess, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckField not implemented")
+}
+func (*UnimplementedUserServiceServer) GetByEmail(ctx context.Context, req *GetByemail) (*UserReq, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
 }
 
 func RegisterUserServiceServer(s *grpc.Server, srv UserServiceServer) {
@@ -204,6 +250,60 @@ func _UserService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Mess)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/ListUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUsers(ctx, req.(*Mess))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CheckField_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Checkfild)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckField(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/CheckField",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckField(ctx, req.(*Checkfild))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByemail)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetByEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetByEmail(ctx, req.(*GetByemail))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _UserService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "user.UserService",
 	HandlerType: (*UserServiceServer)(nil),
@@ -223,6 +323,18 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _UserService_Delete_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _UserService_ListUsers_Handler,
+		},
+		{
+			MethodName: "CheckField",
+			Handler:    _UserService_CheckField_Handler,
+		},
+		{
+			MethodName: "GetByEmail",
+			Handler:    _UserService_GetByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
